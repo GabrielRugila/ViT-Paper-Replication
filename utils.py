@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 import zipfile
 import requests
+import logging
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -11,10 +12,12 @@ from torch.utils.data import DataLoader
 import torchvision
 from torchvision import datasets, transforms
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_WORKERS = os.cpu_count()
 
-def create_dataloaders(train_dir: str, test_dir: str, transform: transforms.Compose, batch_size: int, num_workers: int=NUM_WORKERS):
+def create_dataloaders(train_dir: str, test_dir: str, transform: transforms.Compose, batch_size: int = 16, num_workers: int=NUM_WORKERS):
     train_data = datasets.ImageFolder(train_dir, transform=transform)
     test_data = datasets.ImageFolder(test_dir, transform=transform)
 
@@ -27,6 +30,7 @@ def create_dataloaders(train_dir: str, test_dir: str, transform: transforms.Comp
         num_workers=num_workers,
         pin_memory=True,
     )
+
     test_dataloader = DataLoader(
         test_data,
         batch_size=batch_size,
@@ -34,7 +38,7 @@ def create_dataloaders(train_dir: str, test_dir: str, transform: transforms.Comp
         num_workers=num_workers,
         pin_memory=True,
     )
-
+    logging.info("Successfully created train and test dataloaders")
     return train_dataloader, test_dataloader, class_names
 
 
