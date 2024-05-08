@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 import torchvision
 from torchvision import datasets, transforms
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(levelname)s] - %(message)s')
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_WORKERS = os.cpu_count()
@@ -241,3 +241,29 @@ def pred_and_plot_image( model: torch.nn.Module, image_path: str, class_names: L
         title = f"Pred: {target_image_pred_label} | Prob: {target_image_pred_probs.max().cpu():.3f}"
     plt.title(title)
     plt.axis(False)
+
+def plot_loss_curves(results):
+
+    loss = results["train_loss"]
+    test_loss = results["test_loss"]
+
+    accuracy = results["train_acc"]
+    test_accuracy = results["test_acc"]
+
+    epochs = range(len(results["train_loss"]))
+
+    plt.figure(figsize=(15, 7))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs, loss, label="train_loss")
+    plt.plot(epochs, test_loss, label="test_loss")
+    plt.title("Loss")
+    plt.xlabel("Epochs")
+    plt.legend()
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs, accuracy, label="train_accuracy")
+    plt.plot(epochs, test_accuracy, label="test_accuracy")
+    plt.title("Accuracy")
+    plt.xlabel("Epochs")
+    plt.legend()
